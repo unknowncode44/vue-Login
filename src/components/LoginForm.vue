@@ -2,6 +2,7 @@
 import { reactive  } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import type { LoginData } from '@/models/LoginModel';
+import { useRouter } from 'vue-router'
 
 // formData será obj reactivo con estructura de interfaz | reactivo - reacciona a los cambios
 const formData: LoginData = reactive({
@@ -11,6 +12,7 @@ const formData: LoginData = reactive({
   remember: false
 })
 
+const router = useRouter();
 // Instanciamos fn de store | nos permite acceder a user creado en store
 const userStore = useUserStore();
 // Al enviar form
@@ -18,6 +20,8 @@ const onSubmit = () =>{
   // Llamamos fn de store que recibe los datos ingresados en inputs
   userStore.setUserInfo(formData); // Guarda/actualiza los datos en state
   console.log(formData)
+  // Redirige a vista home
+  router.push('/')
 };
 
 </script>
