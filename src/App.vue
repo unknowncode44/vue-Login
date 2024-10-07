@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink,  RouterView } from 'vue-router'
 </script>
 
 <template>
   <header>
     <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
+      <nav class="navbar">
+        <RouterLink id="route"  to="/">Home</RouterLink> 
+        <RouterLink id="route" to="/login">Login</RouterLink> 
       </nav>
     </div>
   </header>
@@ -14,5 +15,13 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
+.navbar{
+  padding: 10px;
+}
+
+#route{
+  color: white;
+  margin: 10px
+}
 
 </style>
