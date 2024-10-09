@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { reactive  } from 'vue';
 import { useUserStore } from '@/stores/userStore';
-import type { LoginData } from '@/models/LoginModel';
+import type { User } from '@/models/LoginModel';
 import { useRouter } from 'vue-router'
 
 // formData será obj reactivo con estructura de interfaz | reactivo - reacciona a los cambios
-const formData: LoginData = reactive({
-  user: '',
+const formData: User = reactive({
+  username: '',
   password: '',
   // Comienza not checked
   remember: false
@@ -31,7 +31,7 @@ const onSubmit = () =>{
     <form @submit.prevent="onSubmit" id="loginForm">
       <h1>Login</h1>
       <div class="input-bx">
-        <input name="user" type="text" v-model="formData.user" placeholder="Usuario" required>
+        <input name="user" type="text" v-model="formData.username" placeholder="Usuario" required>
         <ion-icon class="icon" name="person-circle"></ion-icon>
       </div>
       <div class="input-bx">

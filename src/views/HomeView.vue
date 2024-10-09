@@ -10,7 +10,7 @@ const userInfo = computed(() => userStore.userInfo);
 </script>
 
 <template>
-    <h1 class="title">Usuario ingresado: {{ userInfo.user }}</h1>
+    <h1 class="title">Usuario ingresado: {{ userInfo.username }}</h1>
     <h3 class="subtitle">
         Contraseña ingresada: {{ userInfo.password }} <br>
         ¿Recordarme?: {{ userInfo.remember }}
