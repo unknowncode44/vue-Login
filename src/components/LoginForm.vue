@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import { reactive  } from 'vue';
-// import type { User } from '@/models/UserModel';
 // Local imports
 import { useUserStore } from '@/stores/userStore';
 import { useRouter } from 'vue-router'
@@ -19,7 +17,7 @@ const schema = Yup.object().shape({
 })
 
 if(authStore.auth.data){
-  router.push('/')
+  router.push('/home')
 }
 
 function handleSubmit(values: any, { setErrors }: any){

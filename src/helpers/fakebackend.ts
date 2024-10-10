@@ -39,6 +39,7 @@ function fakeBackend() {
 
             // Handle fake routes as if we are making API calls
             function handleRoute() {
+                console.log(opts)
                 const { method } = opts;
                 switch (true) {
                     // If the array ends w/url and request certain method, then run fn
@@ -125,7 +126,7 @@ function fakeBackend() {
                 return ok(users);
             }
 
-            //
+            // Helper functions
             function ok(body: any) {
                 resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(body)) } as Response);
             }
