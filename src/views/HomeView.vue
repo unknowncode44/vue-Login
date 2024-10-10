@@ -1,20 +1,26 @@
 <script setup lang="ts">
+import { reactive } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import type { User } from '@/models/UserModel';
+import { useAuthStore } from '@/stores/authStore';
 
-// computed permite crear props reactivas basadas en otras variables
-import { computed } from 'vue';
-// Instanciamos store para acceder a su state
-const userStore = useUserStore();
-// Definimos const computada para que se actualice cuando cambie la info del estado
-const userInfo = computed(() => userStore.userInfo);
+const user: User = reactive<User>(useUserStore().user)
+
+const authStore = useAuthStore();
+
+function logout(){
+    authStore.logout();
+}
+
 </script>
 
 <template>
-    <h1 class="title">Usuario ingresado: {{ userInfo.username }}</h1>
+    <h1 class="title">Hola: {{ user.username }}</h1>
     <h3 class="subtitle">
-        Contraseña ingresada: {{ userInfo.password }} <br>
-        ¿Recordarme?: {{ userInfo.remember }}
+        Contraseña ingresada: {{ user.password }} <br>
+        ¿Recordarme?: {{ user.remember }}
     </h3>
+    <button @click="logout()">Logout</button>
 </template>
 
 <style scoped>

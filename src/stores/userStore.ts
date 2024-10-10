@@ -9,17 +9,17 @@ import type { User } from "@/models/UserModel";
 export const useUserStore = defineStore('user', {
   // state devuelve obj representando estado INICIAL
   state: () => ({
-    /* userInfo se define como estrutura tipo logindata(interfaz)
+    /* user se define como estrutura tipo User(interfaz)
     Guarda info del user despues de login */
-    userInfo: {} as User, // Inicia como obj vacío
+    user: {} as User, // Inicia como obj vacío
   }),
   // actions son métodos que permiten modificar el state de store
   actions: {
     /* setUserInfo actualiza info del usuario
     Recibe el objeto userInfo de tipo logindata */
-    setUserInfo(userInfo: User) {
+    setUser(user: User) {
       // Actualizamos el state de userInfo con los datos ingresados
-      this.userInfo = userInfo;
+      this.user = user;
     },
   },
 });

@@ -1,4 +1,4 @@
-export { fakeBackend };
+export { fakeBackend as fakeBackend };
 
 import type { User } from '@/models/UserModel'
 import type { JwtPayload } from '@/models/JwtModel';
@@ -60,7 +60,7 @@ function fakeBackend() {
 
             // Routes functions
             function authenticate() {
-                // Deconstruct name and pass from body in model created
+                // Destructure name and pass from body in model created
                 const { username, password } = body<AuthRequestBody>();
                 // Tries to find the user
                 const user = users.find(x => x.username === username && x.password === password);
@@ -91,6 +91,7 @@ function fakeBackend() {
                 // Replace old refresh token for a new one and save it
                 user.refreshTokens = user.refreshTokens.filter(x => x !== refreshToken);
                 user.refreshTokens.push(generateRefreshToken());
+                // Update localstorage
                 localStorage.setItem(usersKey, JSON.stringify(users));
 
                 return ok({
