@@ -5,7 +5,7 @@ import type { JwtPayload } from '@/models/JwtModel';
 import type { AuthRequestBody } from '@/models/AuthReqModel';
 
 
-// Array de usuarios en localstorage
+// Users array in localstorage
 const usersKey = 'vue-3-jwt-refresh-token-users';
 const users: User[] = JSON.parse(localStorage.getItem(usersKey) || '[]');
 

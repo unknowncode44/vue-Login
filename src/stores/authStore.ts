@@ -5,7 +5,6 @@ import { defineStore } from "pinia";
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
 /**
- * @description
  * @param logout revokes token so it can't be used after logout
  */
 

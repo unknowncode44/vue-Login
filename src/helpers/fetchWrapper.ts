@@ -32,9 +32,9 @@ function request(method: string){
  */
 function authHeader(url: string): Record<string, string>{
     const { auth } = useAuthStore();
-    // Si tiene un jwtToken significa que está logueado
+    // If it has a token means its logged
     const isLoggedIn = !!auth.data?.jwtToken;
-    // Si existe url que empiece por (localhost)
+    // If url starts w/loalhost then...
     const isApiUrl = url.startsWith(import.meta.env.VITE_API_URL);
 
     if(isLoggedIn && isApiUrl){
@@ -45,13 +45,13 @@ function authHeader(url: string): Record<string, string>{
 }
 
 async function handleResponse(response: Response): Promise<any>{
-    // Recibimos texto de la response
+    // Get text from response
     const text = await response.text();
     const data: any = text ? JSON.parse(text): null;
 
     /**
      * @param error manages errors in the function
-     * @returns message that can be 'token rovocado/encontrado/etc'
+     * @returns message that can be any return from fakebackend (token rovocado/encontrado/etc)
      */
 
     if(!response.ok){
