@@ -1,5 +1,9 @@
 import { useAuthStore } from '@/stores/authStore';
 
+/**
+ * @description fetchWrapper authenticates the request
+ */
+
 export const fetchWrapper = {
     get: request('GET'),
     post: request('POST'),
@@ -32,11 +36,12 @@ function request(method: string){
  */
 function authHeader(url: string): Record<string, string>{
     const { auth } = useAuthStore();
-    // If it has a token means its logged
+    // If the property jwtToken inside auth exists and is not null
     const isLoggedIn = !!auth.data?.jwtToken;
     // If url starts w/loalhost then...
     const isApiUrl = url.startsWith(import.meta.env.VITE_API_URL);
 
+    // Passes the token to the header as an authorization - this notify that the user is allowed to receive info
     if(isLoggedIn && isApiUrl){
         return { Authorization: `Bearer ${auth.data?.jwtToken}`};
     } else{

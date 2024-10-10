@@ -3,7 +3,7 @@
 // un obj con lo que queremos mostrar
 import { defineStore } from "pinia";
 // traemos el modelo
-import type { User } from "@/models/LoginModel";
+import type { User } from "@/models/UserModel";
 
 // Definimos store user
 export const useUserStore = defineStore('user', {

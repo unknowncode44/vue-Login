@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive  } from 'vue';
 import { useUserStore } from '@/stores/userStore';
-import type { User } from '@/models/LoginModel';
+import type { User } from '@/models/UserModel';
 import { useRouter } from 'vue-router'
 
 // formData será obj reactivo con estructura de interfaz | reactivo - reacciona a los cambios

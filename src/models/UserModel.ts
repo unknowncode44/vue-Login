@@ -7,9 +7,9 @@ export interface User{
     lastName: string,
     username: string,
     password: string,
-    // remember: boolean,
+    remember?: boolean,
     isAdmin: boolean,
-    // jwtToken: string,
+    jwtToken?: string,
     // Array para almacenar
     refreshTokens: string[]
 }

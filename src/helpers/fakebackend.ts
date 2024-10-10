@@ -1,6 +1,6 @@
 export { fakeBackend };
 
-import type { User } from '@/models/LoginModel'
+import type { User } from '@/models/UserModel'
 import type { JwtPayload } from '@/models/JwtModel';
 import type { AuthRequestBody } from '@/models/AuthReqModel';
 
@@ -33,14 +33,15 @@ function fakeBackend() {
 
     window.fetch = function (url, opts: any): Promise<Response> {
         return new Promise((resolve, reject) => {
-            // Wrap the function in a setTimeout to simulate an API request
+            // Wrap the function in a timeout to simulate a delay as in an API request
+            // If we don't set a timeout the response works automatically 
             setTimeout(handleRoute, 1000);
 
             // Handle fake routes as if we are making API calls
             function handleRoute() {
                 const { method } = opts;
                 switch (true) {
-                    // If the array ends w/url and certain method, then run authenticate fn
+                    // If the array ends w/url and request certain method, then run fn
                     case url.toString().endsWith('/users/authenticate') && method === 'POST':
                         return authenticate();
                     case url.toString().endsWith('/users/refresh-token') && method === 'POST':
@@ -69,7 +70,6 @@ function fakeBackend() {
                 // Generates refresh token and assigns it to the user
                 user.refreshTokens.push(generateRefreshToken());
                 localStorage.setItem(usersKey, JSON.stringify(users));
-
                 return ok({
                     id: user.id,
                     username: user.username,
