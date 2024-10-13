@@ -16,6 +16,8 @@ const schema = Yup.object().shape({
   password: Yup.string().required('Contraseña requerida')
 })
 
+console.info('[LoginForm] AuthData:', authStore.auth.data)
+
 if(authStore.auth.data){
   router.push('/home')
 }
@@ -23,7 +25,7 @@ if(authStore.auth.data){
 function handleSubmit(values: any, { setErrors }: any){
   const { username, password } = values;
   return authStore.login(username, password).then(() =>{
-    router.push('/');
+    router.push('/home');
   })
   .catch(error => setErrors({ apiError: error }))
 }

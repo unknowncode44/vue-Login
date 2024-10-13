@@ -22,9 +22,10 @@ async function startApp() {
         const authStore = useAuthStore();
         await authStore.refreshToken();
     } catch (error) {
+        console.error(error);
         console.warn('No hay datos de autenticación para el usuario');
         console.info('Redirigiendo a login page');
-        router.push('/login')
+        router.push('/')
     }
 
     app.mount('#app')

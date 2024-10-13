@@ -15,40 +15,37 @@ export const useAuthStore = defineStore({
         auth: {} as { loading: boolean, data?: User | null, refreshTokenTimeout: number | null }
     }),
     actions: {
-        // Setting up a timeout in bakend means the fn will have to wait for a resp
-        // Therefore, handleResponse in fetchWrapper is async and so is login
-        async login(username: string, password: string){
-            this.auth.data = await fetchWrapper.post(`${baseUrl}/authenticate`, {username, password}, { credentials: 'include' });
-            // This executes the cicle (RT fn and SRTT fn below)
+        async login(username: string, password: string) {
+            this.auth.data = await fetchWrapper.post(`${baseUrl}/authenticate`, { username, password }, { credentials: 'include' });
             this.startRefreshTokenTimer();
         },
-        logout() {
-            fetchWrapper.post(`${baseUrl}/revoke-token`, {}, { credentials: 'include' });
+        async logout() {
+            await fetchWrapper.post(`${baseUrl}/revoke-token`, {}, { credentials: 'include' });
             this.stopRefreshTokenTimer();
-            // The user data goes empty
             this.auth.data = null;
-            router.push({ name: '/'})
+           
         },
-        async refreshToken(){
+        async refreshToken() {
             this.auth.data = await fetchWrapper.post(`${baseUrl}/refresh-token`, {}, { credentials: 'include' });
             this.startRefreshTokenTimer();
         },
-        startRefreshTokenTimer(){
-            if(!this.auth.data || !this.auth.data.jwtToken) return;
+        startRefreshTokenTimer() {
+            if (!this.auth.data || !this.auth.data.jwtToken) return;
 
-            // Parse a base64 JSON obj 
-            const jwtBase64 = this.auth.data.jwtToken.split('.')[1]; // split returns array, index 1 is where the payload is
-            const decodedJwtToken = JSON.parse(atob(jwtBase64))
+            // Parse JSON object from base64 encoded JWT token
+            const jwtBase64 = this.auth.data.jwtToken.split('.')[1];
+            const jwtToken = JSON.parse(atob(jwtBase64));
 
-            // timeout to refesh the token before it expires
-            const expires = new Date(decodedJwtToken.exp*1000) // get exp from decoded and multiply to get it in seconds
-            const timeout = expires.getTime() - Date.now() - (60*1000);
-            this.auth.refreshTokenTimeout = setTimeout(this.refreshToken, timeout);
-        },
-        stopRefreshTokenTimer(){
-            if(this.auth.refreshTokenTimeout){
+            // Set a timeout to refresh the token a minute before it expires
+            const expires = new Date(jwtToken.exp * 1000);
+            const timeout = expires.getTime() - Date.now() - (60 * 1000);
+
+            this.auth.refreshTokenTimeout = setTimeout(() => this.refreshToken, timeout);
+        },    
+        stopRefreshTokenTimer() {
+            if (this.auth.refreshTokenTimeout) {
                 clearTimeout(this.auth.refreshTokenTimeout);
-                this.auth.refreshTokenTimeout = null
+                this.auth.refreshTokenTimeout = null;
             }
         }
     }

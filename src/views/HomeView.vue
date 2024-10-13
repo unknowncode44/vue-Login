@@ -3,13 +3,15 @@ import { reactive } from 'vue';
 import { useUserStore } from '@/stores/userStore';
 import type { User } from '@/models/UserModel';
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';
 
 const user: User = reactive<User>(useUserStore().user)
 
 const authStore = useAuthStore();
+const router = useRouter()
 
 function logout(){
-    authStore.logout();
+    authStore.logout().then(() =>  router.push('/'));
 }
 
 </script>

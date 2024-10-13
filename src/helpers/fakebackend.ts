@@ -1,48 +1,69 @@
-export { fakeBackend as fakeBackend };
+export { fakeBackend };
 
-import type { User } from '@/models/UserModel'
-import type { JwtPayload } from '@/models/JwtModel';
-import type { AuthRequestBody } from '@/models/AuthReqModel';
+import type { User              } from '@/models/UserModel'
+import type { JwtPayload        } from '@/models/JwtModel';
+import type { AuthRequestBody   } from '@/models/AuthReqModel';
 
 
-// Users array in localstorage
+// Array de usuarios en localstorage
 const usersKey = 'vue-3-jwt-refresh-token-users';
 const users: User[] = JSON.parse(localStorage.getItem(usersKey) || '[]');
 
-// Add a test user in localstorage if there isn't any
-const user: User = {
-    id: 1,
-    firstName: 'Ignacio',
-    lastName: 'Aedo',
-    username: 'test',
+
+// Agregar un usuario test en localstorage si no hay ninguno
+const user: User = { 
+    id: 1, 
+    firstName: 'Matias', 
+    lastName: 'Orellana', 
+    username: 'test', 
     password: 'test',
-    isAdmin: true,
-    refreshTokens: []
+    isAdmin: true, 
+    refreshTokens: [] 
+}
+const user2: User = { 
+    id: 1, 
+    firstName: 'Usuario de', 
+    lastName: 'Prueba', 
+    username: 'prueba', 
+    password: 'test',
+    isAdmin: false, 
+    refreshTokens: [] 
 }
 
 
-// If there's no users, create one and save it in localstorage
-if (!users.length) {
+
+// si no hay usuarios creamos uno y lo guardamos en almacenamiento local
+if (!users.length || users.length < 2) {
     users.push(user);
+    users.push(user2)
+    if(users.length > 2){
+        users.shift()
+    }
+    localStorage.setItem(usersKey, JSON.stringify(users));
+}
+
+if (users.length > 2) {
+    users.shift();
     localStorage.setItem(usersKey, JSON.stringify(users));
 }
 
 function fakeBackend() {
-    // Intercept any fetch made
+
     const realFetch = window.fetch;
 
     window.fetch = function (url, opts: any): Promise<Response> {
         return new Promise((resolve, reject) => {
-            // Wrap the function in a timeout to simulate a delay as in an API request
-            // If we don't set a timeout the response works automatically 
+            // Envolvemos la funcion en un setTimeout para simular una llamada a API
             setTimeout(handleRoute, 1000);
 
-            // Handle fake routes as if we are making API calls
+            // manejamos las rutas falsas como si hicieramos llamados api
             function handleRoute() {
-                console.log(opts)
+                console.info("Methods: ", opts )
+                if(opts === undefined) {
+                    return
+                }
                 const { method } = opts;
                 switch (true) {
-                    // If the array ends w/url and request certain method, then run fn
                     case url.toString().endsWith('/users/authenticate') && method === 'POST':
                         return authenticate();
                     case url.toString().endsWith('/users/refresh-token') && method === 'POST':
@@ -59,18 +80,18 @@ function fakeBackend() {
                 }
             }
 
-            // Routes functions
+            // Funciones de rutas
+
             function authenticate() {
-                // Destructure name and pass from body in model created
                 const { username, password } = body<AuthRequestBody>();
-                // Tries to find the user
                 const user = users.find(x => x.username === username && x.password === password);
 
                 if (!user) return error('Usuario o contraseña incorrectos');
 
-                // Generates refresh token and assigns it to the user
+                // Agregar refresh token al usuario
                 user.refreshTokens.push(generateRefreshToken());
                 localStorage.setItem(usersKey, JSON.stringify(users));
+
                 return ok({
                     id: user.id,
                     username: user.username,
@@ -81,7 +102,6 @@ function fakeBackend() {
                 });
             }
 
-
             function refreshToken() {
                 const refreshToken = getRefreshToken();
                 if (!refreshToken) return unauthorized();
@@ -89,10 +109,9 @@ function fakeBackend() {
                 const user = users.find(x => x.refreshTokens.includes(refreshToken));
                 if (!user) return unauthorized();
 
-                // Replace old refresh token for a new one and save it
+                // Reemplazar refresh token viejo por uno nuevo y guardar
                 user.refreshTokens = user.refreshTokens.filter(x => x !== refreshToken);
                 user.refreshTokens.push(generateRefreshToken());
-                // Update localstorage
                 localStorage.setItem(usersKey, JSON.stringify(users));
 
                 return ok({
@@ -111,22 +130,23 @@ function fakeBackend() {
                 const refreshToken = getRefreshToken();
                 const _user = users.find(x => x.refreshTokens.includes(refreshToken));
 
-                // Revoke token and save in localstorage
-                if (_user !== undefined) {
+                // Revocar token y guardar en almacenamiento local
+                if(_user !==  undefined) {
                     _user.refreshTokens = _user.refreshTokens.filter(x => x !== refreshToken);
                     localStorage.setItem(usersKey, JSON.stringify(users));
                 }
 
-                return ok({ msg: 'Token revocado' });
+                return ok({msg: 'Token revocado'});
             }
 
-            // Obtains users, controls if the user is logged in
+            // funciona para obtener usuarios, controla  si el usuario está logueado
             function getUsers() {
                 if (!isLoggedIn()) return unauthorized();
                 return ok(users);
             }
 
-            // Helper functions
+            // Funciones Auxiliares
+
             function ok(body: any) {
                 resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(body)) } as Response);
             }
@@ -140,11 +160,11 @@ function fakeBackend() {
             }
 
             function isLoggedIn(): boolean {
-                // Checks if the JWT is in auth header
+                // Chequea si el JWT esta en el auth header
                 const authHeader = opts.headers?.['Authorization'] || '';
                 if (!authHeader.startsWith('Bearer fake-jwt-token')) return false;
 
-                // Checks if the token expired
+                // Chequea si el token expiro
                 try {
                     const jwtToken = JSON.parse(atob(authHeader.split('.')[1])) as JwtPayload;
                     const tokenExpired = Date.now() > jwtToken.exp * 1000;
@@ -161,24 +181,23 @@ function fakeBackend() {
             }
 
             function generateJwtToken(): string {
-                // Creates token expiring in 2 min
+                // Crea token que expira en 2 minutos
                 const tokenPayload: JwtPayload = { exp: Math.round(Date.now() / 1000 + 2 * 60) };
                 const fakeJwtToken: string = `fake-jwt-token.${btoa(JSON.stringify(tokenPayload))}`;
                 return fakeJwtToken;
             }
 
             function generateRefreshToken(): string {
-                const token: string = new Date().getTime().toString();
-                // Add refresh token expiring in 7 days
-                const expires: string = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
-                // Insert refresh token into the cookie
+                const token = new Date().getTime().toString();
+                // Agregar un refresh token que expira en 7 dias
+                const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
                 document.cookie = `fakeRefreshToken=${token}; expires=${expires}; path=/`;
 
                 return token;
             }
 
             function getRefreshToken(): string {
-                // Obtains refresh token from the cookie
+                // Obtener el refresh token de la cookie
                 return (document.cookie.split(';').find(x => x.includes('fakeRefreshToken')) || '=').split('=')[1];
             }
         });
